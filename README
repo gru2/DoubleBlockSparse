@@ -1,0 +1,3 @@
+
+The goal of DoubleBlockSparse is to implement custom layers for popular machine learning frameworks that enable double sparsity eg. both sparse weights and sparse features. 
+
