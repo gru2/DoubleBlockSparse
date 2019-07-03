@@ -1,3 +1,7 @@
 
-The goal of DoubleBlockSparse is to implement custom layers for popular machine learning frameworks that enable double sparsity eg. both sparse weights and sparse features. 
-
+The goal of DoubleBlockSparse project is to implement custom layers for popular
+machine learning frameworks that enable double sparsity eg. both sparse
+weights and sparse features. It combines ideas from several references:
+block sparsity from [1], double sparsity from [2], local, biologicaly
+plausable sparse learning rules based on lateral inhibition [3], and
+sparse evolutionary training [4].
