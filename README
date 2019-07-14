@@ -5,3 +5,11 @@ weights and sparse features. It combines ideas from several references:
 block sparsity from [1], double sparsity from [2], local, biologicaly
 plausable sparse learning rules based on lateral inhibition [3], and
 sparse evolutionary training [4].
+
+[1] - https://openai.com/blog/block-sparse-gpu-kernels
+
+[2] - https://numenta.com/neuroscience-research/research-publications/posters/icml-2019-how-can-we-be-so-dense
+
+[3] - https://www.ibm.com/blogs/research/2019/04/biological-algorithm
+
+[4] - Decebal Constantin Mocanu, Elena Mocanu, Peter Stone, Phuong H. Nguyen, Madeleine Gibescu, Antonio Liotta - Scalable Training of Artificial Neural Networks with Adaptive Sparse Connectivity inspired by Network Science - https://arxiv.org/abs/1707.04780
