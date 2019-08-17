@@ -4,7 +4,7 @@ find_package(CUDA REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(SOURCES CudaUtils.cpp)
+set(SOURCES CudaUtils.cu)
 
 set(HEADER_FILES CudaUtils.h CudaUtils.cuh)
 
