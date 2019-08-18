@@ -8,6 +8,6 @@ namespace CudaUtils
 
 void cudaErrCheck_(cudaError_t stat, const char *file, int line);
 
-}
+};
 
 #endif
