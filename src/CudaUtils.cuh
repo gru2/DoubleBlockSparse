@@ -1,6 +1,8 @@
 #ifndef CUDA_UTILS_CUH
 #define CUDA_UTILS_CUH
 
+#include <cublas_v2.h>
+
 #define cudaErrCheck(stat) { CudaUtils::cudaErrCheck_((stat), __FILE__, __LINE__); }
 #define cublasErrCheck(stat) { CudaUtils::cublasErrCheck_((stat), __FILE__, __LINE__); }
 

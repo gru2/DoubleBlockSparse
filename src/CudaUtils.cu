@@ -7,7 +7,7 @@
 
 using namespace CudaUtils;
 
-void cudaErrCheck_(cudaError_t stat, const char *file, int line)
+void CudaUtils::cudaErrCheck_(cudaError_t stat, const char *file, int line)
 {
 	if (stat != cudaSuccess)
 	{
@@ -16,7 +16,7 @@ void cudaErrCheck_(cudaError_t stat, const char *file, int line)
 	}
 }
 
-void cublasErrCheck_(cublasStatus_t stat, const char *file, int line)
+void CudaUtils::cublasErrCheck_(cublasStatus_t stat, const char *file, int line)
 {
 	if (stat != CUBLAS_STATUS_SUCCESS)
 	{
@@ -25,14 +25,14 @@ void cublasErrCheck_(cublasStatus_t stat, const char *file, int line)
 	}
 }
 
-void *deviceAllocate(size_t x)
+void *CudaUtils::deviceAllocate(size_t x)
 {
 	void *p;
 	cudaErrCheck(cudaMalloc(&p, x));
 	return p;
 }
 
-void deviceFree(void *x)
+void CudaUtils::deviceFree(void *x)
 {
 	if (x)
 	{
@@ -40,17 +40,17 @@ void deviceFree(void *x)
 	}
 }
 
-void memcpyDevice(void *src, void *dst, int len)
+void CudaUtils::memcpyDevice(void *src, void *dst, int len)
 {
 	cudaErrCheck(cudaMemcpy(src, dst, len, cudaMemcpyDeviceToDevice));
 }
 
-void memcpyDeviceToHost(void *src, void *dst, int len)
+void CudaUtils::memcpyDeviceToHost(void *src, void *dst, int len)
 {
 	cudaErrCheck(cudaMemcpy(src, dst, len, cudaMemcpyDeviceToHost));
 }
 
-void memcpyHostToDevice(void *src, void *dst, int len)
+void CudaUtils::memcpyHostToDevice(void *src, void *dst, int len)
 {
 	cudaErrCheck(cudaMemcpy(src, dst, len, cudaMemcpyHostToDevice));
 }
@@ -69,25 +69,27 @@ CuBlasHandle::~CuBlasHandle()
 
 void *CuBlasHandle::getHandle()
 {
-	if (handle)
-		return;
+	if (!handle)
+	{
+		cublasHandle_t *cuh = new cublasHandle_t;
+		cublasErrCheck(cublasCreate(cuh));
+		handle = cuh;
+	}
 
-	cublasHandle_t *cuh = new cuh;
-	cublasErrCheck(cublasCreate(cuh));
-	handle = cuh;
+	return handle;
 }
 
-void gemm(MatrixF &lhs, MatrixF &rhs, MatrixF &r, CuBlasHandle &handle);
+void gemm(MatrixF &lhs, MatrixF &rhs, MatrixF &r, CuBlasHandle &handle)
 {
 	float alpha = 1.0f;
 	float beta = 0.0f;
 	cublasHandle_t *cuh = static_cast<cublasHandle_t *>(handle.getHandle());
-	cublasErrCheck(cublasSgemm(*cuh),
+	cublasErrCheck(cublasSgemm(*cuh,
 		CUBLAS_OP_N, CUBLAS_OP_N,
 		rhs.cols, lhs.rows, lhs.cols,
 		&alpha,
 		rhs.data, rhs.cols,
 		lhs.data, lhs.cols,
 		&beta,
-		r.data, r.cols);
+		r.data, r.cols));
 }
