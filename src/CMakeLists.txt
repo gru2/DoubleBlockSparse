@@ -4,9 +4,9 @@ find_package(CUDA REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(SOURCES CudaUtils.cu)
+set(SOURCES CudaUtils.cu EigenUtils.cpp)
 
-set(HEADER_FILES CudaUtils.h CudaUtils.cuh)
+set(HEADER_FILES CudaUtils.h CudaUtils.cuh EigenUtils.h)
 
 set(TESTS test_double_block_sparse.cpp)
 
