@@ -9,9 +9,9 @@ namespace CudaUtils
 
 void *deviceAllocate(size_t x);
 void deviceFree(void *x);
-void memcpyDevice(void *src, void *dst, int len);
-void memcpyDeviceToHost(void *src, void *dst, int len);
-void memcpyHostToDevice(void *src, void *dst, int len);
+void memcpyDevice(void *dst, void *src, int len);
+void memcpyDeviceToHost(void *dst, void *src, int len);
+void memcpyHostToDevice(void *dst, void *srt, int len);
 
 template<typename T>
 class Matrix
@@ -63,40 +63,40 @@ template<typename T>
 Matrix<T> toDevice(const Matrix<T> &x)
 {
 	Matrix<T> r = allocateMatrixOnDevice<T>(x.rows, x.cols);
-	memcpyHostToDevice(x.getData(), r.getData(), x.rows * x.cols * sizeof(T));
+	memcpyHostToDevice(r.data, x.data, x.rows * x.cols * sizeof(T));
 	return r;
 }
 
 template<typename T>
 void toDevice(Matrix<T> &dst, Matrix<T> &src)
 {
-	memcpyHostToDevice(src.getData(), dst.getData(), dst.rows * dst.cols * sizeof(T));
+	memcpyHostToDevice(dst.data, src.data, dst.rows * dst.cols * sizeof(T));
 }
 
 template<typename T>
 Matrix<T> toHost(const Matrix<T> &x)
 {
-	Matrix<T> r = allocateMatrixOnDevice<T>(x.rows, x.cols);
-	memcpyDeviceToHost(x.getData(), r.getData(), x.rows * x.cols * sizeof(T));
+	Matrix<T> r = allocateMatrixOnHost<T>(x.rows, x.cols);
+	memcpyDeviceToHost(r.data, x.data, x.rows * x.cols * sizeof(T));
 	return r;
 }
 
 template<typename T>
 void toHost(Matrix<T> &dst, const Matrix<T> &src)
 {
-	memcpyDeviceToHost(src.getData(), dst.getData(), dst.rows * dst.cols * sizeof(T));
+	memcpyDeviceToHost(dst.data, src.data, dst.rows * dst.cols * sizeof(T));
 }
 
 template<typename T>
 void copyDataOnHost(Matrix<T> &dst, const Matrix<T> &src)
 {
-	memcpy(src.getData(), dst.getData(), dst.rows * dst.cols * sizeof(T));
+	memcpy(src.data, dst.data, dst.rows * dst.cols * sizeof(T));
 }
 
 template<typename T>
 void copyDataOnDevice(Matrix<T> &dst, const Matrix<T> &src)
 {
-	memcpyDevice(src.getData(), dst.getData(), dst.rows * dst.cols * sizeof(T));
+	memcpyDevice(dst.data, src.data, dst.rows * dst.cols * sizeof(T));
 }
 
 template<typename T>

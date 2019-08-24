@@ -40,19 +40,19 @@ void CudaUtils::deviceFree(void *x)
 	}
 }
 
-void CudaUtils::memcpyDevice(void *src, void *dst, int len)
+void CudaUtils::memcpyDevice(void *dst, void *src, int len)
 {
-	cudaErrCheck(cudaMemcpy(src, dst, len, cudaMemcpyDeviceToDevice));
+	cudaErrCheck(cudaMemcpy(dst, src, len, cudaMemcpyDeviceToDevice));
 }
 
-void CudaUtils::memcpyDeviceToHost(void *src, void *dst, int len)
+void CudaUtils::memcpyDeviceToHost(void *dst, void *src, int len)
 {
-	cudaErrCheck(cudaMemcpy(src, dst, len, cudaMemcpyDeviceToHost));
+	cudaErrCheck(cudaMemcpy(dst, src, len, cudaMemcpyDeviceToHost));
 }
 
-void CudaUtils::memcpyHostToDevice(void *src, void *dst, int len)
+void CudaUtils::memcpyHostToDevice(void *dst, void *src, int len)
 {
-	cudaErrCheck(cudaMemcpy(src, dst, len, cudaMemcpyHostToDevice));
+	cudaErrCheck(cudaMemcpy(dst, src, len, cudaMemcpyHostToDevice));
 }
 
 CuBlasHandle::CuBlasHandle() : handle(0)
