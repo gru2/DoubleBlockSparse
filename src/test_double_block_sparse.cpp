@@ -5,6 +5,8 @@
 #include <EigenUtils.h>
 #include <Eigen/Core>
 
+CudaUtils::CuBlasHandle handle;
+
 USUTF_TEST(testDeviceAllocate)
 {
 	void *x = CudaUtils::deviceAllocate(1);
@@ -33,6 +35,27 @@ USUTF_TEST(testCudaUtils_toDevice_and_toHost)
 	CudaUtils::MatrixF a_host = CudaUtils::toHost(a_device);
 	Eigen::MatrixXf a_test = EigenUtils::toEigen(a_host);
 	Usutf::test(a_test == a_ref);
+}
+
+USUTF_TEST(testCudaUtils_gemm)
+{
+	Eigen::MatrixXf ae(2, 3);
+	ae <<
+	1.0f, 2.3f, -1.3f,
+	4.5f, 2.2f, 11.4f;
+	Eigen::MatrixXf be(3, 4);
+	be <<
+	1.0f,  2.3f, -1.3f,  3.9f,
+	4.5f,  2.2f, 11.4f, -0.9f,
+	1.3f, -0.2f,  2.4f,  3.1f;
+	Eigen::MatrixXf c_ref = ae * be;
+	CudaUtils::MatrixF a = CudaUtils::toDevice(EigenUtils::toMatrix(ae));
+	CudaUtils::MatrixF b = CudaUtils::toDevice(EigenUtils::toMatrix(be));
+	CudaUtils::MatrixF c_device = CudaUtils::allocateMatrixOnDeviceF(c_ref.rows(), c_ref.cols());
+	CudaUtils::gemm(c_device, a, b, handle);
+	CudaUtils::MatrixF c_host = CudaUtils::toHost(c_device);
+	Eigen::MatrixXf c_test = EigenUtils::toEigen(c_host);
+	Usutf::test(EigenUtils::almostEqual(c_test, c_ref));
 }
 
 int main(int argc, char *argv[])

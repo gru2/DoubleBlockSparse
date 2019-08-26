@@ -79,7 +79,7 @@ void *CuBlasHandle::getHandle()
 	return handle;
 }
 
-void gemm(MatrixF &lhs, MatrixF &rhs, MatrixF &r, CuBlasHandle &handle)
+void CudaUtils::gemm(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs, CuBlasHandle &handle)
 {
 	float alpha = 1.0f;
 	float beta = 0.0f;

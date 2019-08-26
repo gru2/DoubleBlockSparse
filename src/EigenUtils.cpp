@@ -32,3 +32,16 @@ CudaUtils::MatrixF EigenUtils::toMatrix(const Eigen::MatrixXf &x)
 	}
 	return r;
 }
+
+bool EigenUtils::almostEqual(const Eigen::MatrixXf &lhs, const Eigen::MatrixXf &rhs, float tol)
+{
+	if (lhs.rows() != rhs.rows())
+		return false;
+	if (lhs.cols() != rhs.cols())
+		return false;
+	for (int j = 0; j < lhs.rows(); j++)
+		for (int i = 0; i < lhs.cols(); i++)
+			if (fabs(lhs(j, i) - rhs(j, i)) > tol)
+				return false;
+	return true;
+}

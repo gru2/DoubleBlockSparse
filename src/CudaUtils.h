@@ -185,7 +185,7 @@ protected:
 	void *handle;
 };
 
-void gemm(MatrixF &lhs, MatrixF &rhs, MatrixF &r, CuBlasHandle &handle);
+void gemm(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs, CuBlasHandle &handle);
 
 };
 #endif
