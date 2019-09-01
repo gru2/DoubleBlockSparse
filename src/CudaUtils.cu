@@ -93,3 +93,36 @@ void CudaUtils::gemm(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs, CuBlasH
 		&beta,
 		r.data, r.cols));
 }
+
+<template int TILE_SIZE>
+__global__ void gemmTiledKernel(const float * __restrict__ A, const float * __restrict__ B, float * __restrict__ C, int N, int M, int K)
+{
+	int tidx = threadIdx.x + blockIdx.x * TILE_SIZE;
+	int tidy = threadIdx.y + blockIdx.y * TILE_SIZE;
+	int Tx = threadIdx.x;
+	int Ty = threadIdx.y;
+	int Bx = blockIdx.x;
+	int By = blockIdx.y;
+
+	__shared__ float As[TILE_SIZE * TILE_SIZE];
+	__shared__ float Bs[TILE_SIZE * TILE_SIZE];
+
+	float s = 0.0f;
+	int n = K / TILE_SIZE;
+	for (int kB = 0; kB < n; kB++)
+	{
+		// Copy tile data from A and B into shared memory.
+		As[Ty * TILE_SIZE + Tx] = A[tidy * K + kB * TILE_SIZE + Tx];
+		Bs[Tx * TILE_SIZE + Ty] = B[(kB * TILE_SIZE + Ty) * N + tidx];
+		__syncthreads();
+
+		// Multiply tiles.
+		int A_offset = Ty * TILE_SIZE
+		int B_offset = Tx * TILE_SIZE
+		for (int k = 0; k < TILE_SIZE; k++)
+			s += As[A_offset + k] * Bs[B_offset + k];
+		__syncthreads();
+	}
+	C[tidy * N + tidx] = s;
+}
+
