@@ -94,7 +94,7 @@ void CudaUtils::gemm(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs, CuBlasH
 		r.data, r.cols));
 }
 
-<template int TILE_SIZE>
+template <int TILE_SIZE>
 __global__ void gemmTiledKernel(const float * __restrict__ A, const float * __restrict__ B, float * __restrict__ C, int N, int M, int K)
 {
 	int tidx = threadIdx.x + blockIdx.x * TILE_SIZE;
@@ -117,8 +117,8 @@ __global__ void gemmTiledKernel(const float * __restrict__ A, const float * __re
 		__syncthreads();
 
 		// Multiply tiles.
-		int A_offset = Ty * TILE_SIZE
-		int B_offset = Tx * TILE_SIZE
+		int A_offset = Ty * TILE_SIZE;
+		int B_offset = Tx * TILE_SIZE;
 		for (int k = 0; k < TILE_SIZE; k++)
 			s += As[A_offset + k] * Bs[B_offset + k];
 		__syncthreads();
