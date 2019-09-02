@@ -126,3 +126,13 @@ __global__ void gemmTiledKernel(const float * __restrict__ A, const float * __re
 	C[tidy * N + tidx] = s;
 }
 
+void CudaUtils::gemmTiled(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs)
+{
+	const int tile_size = 16;
+	int M = lhs.rows;
+	int N = rhs.cols;
+	int K = lhs.cols;
+	dim3 block(tile_size, tile_size);
+	dim3 grid(M / tile_size, N / tile);
+	gemmTiledKernel<tile_size><<<grid, block>>>(lhs.data, rhs.data, r.data, M, N, K);
+}
