@@ -101,8 +101,6 @@ __global__ void gemmTiledKernel(const float * __restrict__ A, const float * __re
 	int tidy = threadIdx.y + blockIdx.y * TILE_SIZE;
 	int Tx = threadIdx.x;
 	int Ty = threadIdx.y;
-	int Bx = blockIdx.x;
-	int By = blockIdx.y;
 
 	__shared__ float As[TILE_SIZE * TILE_SIZE];
 	__shared__ float Bs[TILE_SIZE * TILE_SIZE];
@@ -133,6 +131,6 @@ void CudaUtils::gemmTiled(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs)
 	int N = rhs.cols;
 	int K = lhs.cols;
 	dim3 block(tile_size, tile_size);
-	dim3 grid(M / tile_size, N / tile);
+	dim3 grid(M / tile_size, N / tile_size);
 	gemmTiledKernel<tile_size><<<grid, block>>>(lhs.data, rhs.data, r.data, M, N, K);
 }

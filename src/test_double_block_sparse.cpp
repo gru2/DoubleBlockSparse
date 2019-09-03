@@ -67,7 +67,7 @@ USUTF_TEST(testCudaUtils_gemmTiled)
 	CudaUtils::MatrixF a = CudaUtils::toDevice(EigenUtils::toMatrix(ae));
 	CudaUtils::MatrixF b = CudaUtils::toDevice(EigenUtils::toMatrix(be));
 	CudaUtils::MatrixF c_device = CudaUtils::allocateMatrixOnDeviceF(c_ref.rows(), c_ref.cols());
-	CudaUtils::gemm(c_device, a, b, handle);
+	CudaUtils::gemmTiled(c_device, a, b);
 	CudaUtils::MatrixF c_host = CudaUtils::toHost(c_device);
 	Eigen::MatrixXf c_test = EigenUtils::toEigen(c_host);
 	Usutf::test(EigenUtils::almostEqual(c_test, c_ref));

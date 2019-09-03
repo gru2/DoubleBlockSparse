@@ -186,6 +186,7 @@ protected:
 };
 
 void gemm(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs, CuBlasHandle &handle);
+void gemmTiled(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs);
 
 };
 #endif
