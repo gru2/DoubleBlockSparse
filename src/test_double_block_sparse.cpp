@@ -73,6 +73,21 @@ USUTF_TEST(testCudaUtils_gemmTiled)
 	Usutf::test(EigenUtils::almostEqual(c_test, c_ref));
 }
 
+USUTF_TEST(testCudaUtils_gemmTiled_2)
+{
+	Eigen::MatrixXf ae(256, 256), be(256, 256);
+	ae.setRandom();
+	be.setRandom();
+	Eigen::MatrixXf c_ref = ae * be;
+	CudaUtils::MatrixF a = CudaUtils::toDevice(EigenUtils::toMatrix(ae));
+	CudaUtils::MatrixF b = CudaUtils::toDevice(EigenUtils::toMatrix(be));
+	CudaUtils::MatrixF c_device = CudaUtils::allocateMatrixOnDeviceF(c_ref.rows(), c_ref.cols());
+	CudaUtils::gemmTiled(c_device, a, b);
+	CudaUtils::MatrixF c_host = CudaUtils::toHost(c_device);
+	Eigen::MatrixXf c_test = EigenUtils::toEigen(c_host);
+	Usutf::test(EigenUtils::almostEqual(c_test, c_ref));
+}
+
 int main(int argc, char *argv[])
 {
 	std::cout << "test lib double_block_sparse...\n";	
