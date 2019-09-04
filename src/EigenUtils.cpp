@@ -1,5 +1,6 @@
 #include <EigenUtils.h>
 #include <CudaUtils.h>
+#include <iostream>
 
 Eigen::MatrixXf EigenUtils::toEigen(const CudaUtils::MatrixF &x)
 {
@@ -38,13 +39,13 @@ bool EigenUtils::almostEqual(const Eigen::MatrixXf &lhs, const Eigen::MatrixXf &
 	if (lhs.rows() != rhs.rows())
 	{
 		if (verbose > 0)
-			std::cout << "rows does not match.\n"
+			std::cout << "rows does not match.\n";
 		return false;
 	}
 	if (lhs.cols() != rhs.cols())
 	{
 		if (verbose > 0)
-			std::cout << "rows does not match.\n"
+			std::cout << "rows does not match.\n";
 		return false;
 	}
 	float max_err = 0.0f;

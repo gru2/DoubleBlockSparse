@@ -90,7 +90,7 @@ USUTF_TEST(testCudaUtils_gemmTiled_2)
 
 USUTF_TEST(testCudaUtils_gemmTiled_3)
 {
-	Eigen::MatrixXf ae(256, 4 * 256), be(4 * 256, 3 * 128);
+	Eigen::MatrixXf ae(96, 64), be(64, 32);
 	ae.setRandom();
 	be.setRandom();
 	Eigen::MatrixXf c_ref = ae * be;

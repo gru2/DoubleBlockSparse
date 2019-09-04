@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cublas_v2.h>
+#include <iostream>
 
 using namespace CudaUtils;
 
@@ -95,7 +96,7 @@ void CudaUtils::gemm(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs, CuBlasH
 }
 
 template <int TILE_SIZE>
-__global__ void gemmTiledKernel(const float * __restrict__ A, const float * __restrict__ B, float * __restrict__ C, int N, int M, int K)
+__global__ void gemmTiledKernel(const float * __restrict__ A, const float * __restrict__ B, float * __restrict__ C, int M, int N, int K)
 {
 	int tidx = threadIdx.x + blockIdx.x * TILE_SIZE;
 	int tidy = threadIdx.y + blockIdx.y * TILE_SIZE;
@@ -131,6 +132,7 @@ void CudaUtils::gemmTiled(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs)
 	int N = rhs.cols;
 	int K = lhs.cols;
 	dim3 block(tile_size, tile_size);
-	dim3 grid(M / tile_size, N / tile_size);
+	dim3 grid(N / tile_size, M / tile_size);
 	gemmTiledKernel<tile_size><<<grid, block>>>(lhs.data, rhs.data, r.data, M, N, K);
 }
+
