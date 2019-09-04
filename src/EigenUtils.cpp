@@ -33,15 +33,35 @@ CudaUtils::MatrixF EigenUtils::toMatrix(const Eigen::MatrixXf &x)
 	return r;
 }
 
-bool EigenUtils::almostEqual(const Eigen::MatrixXf &lhs, const Eigen::MatrixXf &rhs, float tol)
+bool EigenUtils::almostEqual(const Eigen::MatrixXf &lhs, const Eigen::MatrixXf &rhs, float tol, int verbose)
 {
 	if (lhs.rows() != rhs.rows())
+	{
+		if (verbose > 0)
+			std::cout << "rows does not match.\n"
 		return false;
+	}
 	if (lhs.cols() != rhs.cols())
+	{
+		if (verbose > 0)
+			std::cout << "rows does not match.\n"
 		return false;
+	}
+	float max_err = 0.0f;
 	for (int j = 0; j < lhs.rows(); j++)
 		for (int i = 0; i < lhs.cols(); i++)
-			if (fabs(lhs(j, i) - rhs(j, i)) > tol)
-				return false;
+		{
+			float t = fabs(lhs(j, i) - rhs(j, i));
+			if (t > max_err)
+				max_err = t;
+		}
+	if (max_err > tol)
+	{
+		if (verbose > 0)
+			std::cout << "max err greater then tol. max_err = " << max_err << " tol = " << tol << "\n";
+		return false;
+	}
+	if (verbose > 1)
+		std::cout << "max_err = " << max_err << " tol = " << tol << "\n";
 	return true;
 }

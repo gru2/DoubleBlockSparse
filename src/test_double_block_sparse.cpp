@@ -100,7 +100,7 @@ USUTF_TEST(testCudaUtils_gemmTiled_3)
 	CudaUtils::gemmTiled(c_device, a, b);
 	CudaUtils::MatrixF c_host = CudaUtils::toHost(c_device);
 	Eigen::MatrixXf c_test = EigenUtils::toEigen(c_host);
-	Usutf::test(EigenUtils::almostEqual(c_test, c_ref));
+	Usutf::test(EigenUtils::almostEqual(c_test, c_ref, 1.0e-3f, 2));
 }
 
 int main(int argc, char *argv[])
