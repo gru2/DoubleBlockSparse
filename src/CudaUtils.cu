@@ -58,7 +58,7 @@ void CudaUtils::memcpyHostToDevice(void *dst, void *src, int len)
 
 void CudaUtils::deviceSynchronize()
 {
-	cudaDeviceSynchronize()
+	cudaDeviceSynchronize();
 }
 
 CuBlasHandle::CuBlasHandle() : handle(0)
