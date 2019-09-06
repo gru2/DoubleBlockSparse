@@ -56,6 +56,11 @@ void CudaUtils::memcpyHostToDevice(void *dst, void *src, int len)
 	cudaErrCheck(cudaMemcpy(dst, src, len, cudaMemcpyHostToDevice));
 }
 
+void CudaUtils::deviceSynchronize()
+{
+	cudaDeviceSynchronize()
+}
+
 CuBlasHandle::CuBlasHandle() : handle(0)
 { }
 

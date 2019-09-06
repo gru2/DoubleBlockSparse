@@ -4,6 +4,7 @@
 #include <CudaUtils.h>
 #include <EigenUtils.h>
 #include <Eigen/Core>
+#include <chrono>
 
 CudaUtils::CuBlasHandle handle;
 
@@ -101,6 +102,27 @@ USUTF_TEST(testCudaUtils_gemmTiled_3)
 	CudaUtils::MatrixF c_host = CudaUtils::toHost(c_device);
 	Eigen::MatrixXf c_test = EigenUtils::toEigen(c_host);
 	Usutf::test(EigenUtils::almostEqual(c_test, c_ref, 1.0e-3f, 2));
+}
+
+USUTF_TEST(benchmark_gemmTiled)
+{
+	Eigen::MatrixXf ae(1024, 1024), be(1024, 64);
+	ae.setRandom();
+	be.setRandom();
+	Eigen::MatrixXf c_ref = ae * be;
+	CudaUtils::MatrixF a = CudaUtils::toDevice(EigenUtils::toMatrix(ae));
+	CudaUtils::MatrixF b = CudaUtils::toDevice(EigenUtils::toMatrix(be));
+	CudaUtils::MatrixF c_device = CudaUtils::allocateMatrixOnDeviceF(c_ref.rows(), c_ref.cols());
+	CudaUtils::deviceSynchronize();
+	auto t1 = std::chrono::high_resolution_clock::now();
+	CudaUtils::gemmTiled(c_device, a, b);
+	CudaUtils::deviceSynchronize();
+	auto t2 = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+	CudaUtils::MatrixF c_host = CudaUtils::toHost(c_device);
+	Eigen::MatrixXf c_test = EigenUtils::toEigen(c_host);
+	Usutf::test(EigenUtils::almostEqual(c_test, c_ref, 1.0e-3f, 2));
+	std::cout << "t2-t1 = " << time_span.count() << " seconds.";
 }
 
 int main(int argc, char *argv[])

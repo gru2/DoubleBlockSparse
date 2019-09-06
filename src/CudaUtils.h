@@ -12,6 +12,7 @@ void deviceFree(void *x);
 void memcpyDevice(void *dst, void *src, int len);
 void memcpyDeviceToHost(void *dst, void *src, int len);
 void memcpyHostToDevice(void *dst, void *srt, int len);
+void deviceSynchronize();
 
 template<typename T>
 class Matrix
