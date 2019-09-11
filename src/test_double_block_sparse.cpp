@@ -106,7 +106,7 @@ USUTF_TEST(testCudaUtils_gemmTiled_3)
 
 USUTF_TEST(benchmark_gemmTiled)
 {
-	Eigen::MatrixXf ae(1024, 1024), be(1024, 64);
+	Eigen::MatrixXf ae(1024, 1024), be(1024, 16);
 	ae.setRandom();
 	be.setRandom();
 	Eigen::MatrixXf c_ref = ae * be;
@@ -126,14 +126,14 @@ USUTF_TEST(benchmark_gemmTiled)
 
 	CudaUtils::deviceSynchronize();
 	auto t3 = std::chrono::high_resolution_clock::now();
-	CudaUtils::gemmTiled(c_device, a, b);
+	CudaUtils::gemm(c_device, a, b, handle);
 	CudaUtils::deviceSynchronize();
 	auto t4 = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> time_span43 = std::chrono::duration_cast<std::chrono::duration<double>>(t4 - t3);
-	c_host = CudaUtils::toHost(c_device);
-	c_test = EigenUtils::toEigen(c_host);
+	CudaUtils::MatrixF c_host2 = CudaUtils::toHost(c_device);
+	c_test = EigenUtils::toEigen(c_host2);
 	Usutf::test(EigenUtils::almostEqual(c_test, c_ref, 1.0e-3f, 2));
-	std::cout << "(gemm) t4-t3 = " << time_span.count() << " seconds.\n";
+	std::cout << "(gemm) t4-t3 = " << time_span43.count() << " seconds.\n";
 }
 
 int main(int argc, char *argv[])
