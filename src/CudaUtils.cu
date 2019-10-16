@@ -100,6 +100,21 @@ void CudaUtils::gemm(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs, CuBlasH
 		r.data, r.cols));
 }
 
+void CudaUtils::gemmTN(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs, CuBlasHandle &handle)
+{
+	float alpha = 1.0f;
+	float beta = 0.0f;
+	cublasHandle_t *cuh = static_cast<cublasHandle_t *>(handle.getHandle());
+	cublasErrCheck(cublasSgemm(*cuh,
+		CUBLAS_OP_N, CUBLAS_OP_T,
+		rhs.cols, lhs.rows, lhs.cols,
+		&alpha,
+		rhs.data, rhs.cols,
+		lhs.data, lhs.cols,
+		&beta,
+		r.data, r.cols));
+}
+
 template <int TILE_SIZE>
 __global__ void gemmTiledKernel(const float * __restrict__ A, const float * __restrict__ B, float * __restrict__ C, int M, int N, int K)
 {
@@ -141,3 +156,11 @@ void CudaUtils::gemmTiled(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs)
 	gemmTiledKernel<tile_size><<<grid, block>>>(lhs.data, rhs.data, r.data, M, N, K);
 }
 
+void CudaUtils::gemmOAI_TN(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs)
+{
+	const int tile_size = 16;
+	int M = lhs.rows;
+	int N = rhs.cols;
+	int K = lhs.cols;
+	Gemm_TN(0, 68, r.data, lhs.data, rhs.data, M, N, K);
+}
