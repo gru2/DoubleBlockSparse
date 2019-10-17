@@ -1,6 +1,7 @@
 #include "ew_op_gpu.h"
 #include <stdio.h>
 #include "CudaUtils.cuh"
+#include <iostream>
 
 // The kernel and the support functions taken form https://github.com/openai/blocksparse
 
@@ -24,10 +25,10 @@ __global__ void __launch_bounds__(128) gemm_32x32x32_TN_vec4(float* U, const V* 
     uint offsetC = n*C + c;
     uint offsetK = n*K + k;
 
-    //bool bc = c < C;
-    //bool bk = k < K;
-    bool bc = true;
-    bool bk = true;
+    bool bc = c < C;
+    bool bk = k < K;
+    //bool bc = true;
+    //bool bk = true;
 
     // shared offsets in bytes
     // When reading, each warp works on its own 8 rows.
@@ -144,14 +145,14 @@ __global__ void __launch_bounds__(128) gemm_32x32x32_TN_vec4(float* U, const V* 
     bk = k < K;
 
     uint offsetU = c*K + k;
-    //atomicRed(add_ptr_u(U, offsetU +  0*K), u[0][0], 0, bk && c +  0 < C);
-    //atomicRed(add_ptr_u(U, offsetU +  4*K), u[1][0], 0, bk && c +  4 < C);
-    //atomicRed(add_ptr_u(U, offsetU +  8*K), u[2][0], 0, bk && c +  8 < C);
-    //atomicRed(add_ptr_u(U, offsetU + 12*K), u[3][0], 0, bk && c + 12 < C);
-    atomicRed(add_ptr_u(U, offsetU +  0*K), u[0][0], 0, true);
-    atomicRed(add_ptr_u(U, offsetU +  4*K), u[1][0], 0, true);
-    atomicRed(add_ptr_u(U, offsetU +  8*K), u[2][0], 0, true);
-    atomicRed(add_ptr_u(U, offsetU + 12*K), u[3][0], 0, true);
+    atomicRed(add_ptr_u(U, offsetU +  0*K), u[0][0], 0, bk && c +  0 < C);
+    atomicRed(add_ptr_u(U, offsetU +  4*K), u[1][0], 0, bk && c +  4 < C);
+    atomicRed(add_ptr_u(U, offsetU +  8*K), u[2][0], 0, bk && c +  8 < C);
+    atomicRed(add_ptr_u(U, offsetU + 12*K), u[3][0], 0, bk && c + 12 < C);
+    //atomicRed(add_ptr_u(U, offsetU +  0*K), u[0][0], 0, true);
+    //atomicRed(add_ptr_u(U, offsetU +  4*K), u[1][0], 0, true);
+    //atomicRed(add_ptr_u(U, offsetU +  8*K), u[2][0], 0, true);
+    //atomicRed(add_ptr_u(U, offsetU + 12*K), u[3][0], 0, true);
 
     __syncthreads();
 
@@ -172,14 +173,14 @@ __global__ void __launch_bounds__(128) gemm_32x32x32_TN_vec4(float* U, const V* 
             for (int i = 0; i < j; i++)
                 u[k][i] += u[k][i+j];
 
-    //atomicRed(add_ptr_u(U, offsetU + 16*K), u[0][0], 0, bk && c + 16 < C);
-    //atomicRed(add_ptr_u(U, offsetU + 20*K), u[1][0], 0, bk && c + 20 < C);
-    //atomicRed(add_ptr_u(U, offsetU + 24*K), u[2][0], 0, bk && c + 24 < C);
-    //atomicRed(add_ptr_u(U, offsetU + 28*K), u[3][0], 0, bk && c + 28 < C);
-    atomicRed(add_ptr_u(U, offsetU + 16*K), u[0][0], 0, true);
-    atomicRed(add_ptr_u(U, offsetU + 20*K), u[1][0], 0, true);
-    atomicRed(add_ptr_u(U, offsetU + 24*K), u[2][0], 0, true);
-    atomicRed(add_ptr_u(U, offsetU + 28*K), u[3][0], 0, true);
+    atomicRed(add_ptr_u(U, offsetU + 16*K), u[0][0], 0, bk && c + 16 < C);
+    atomicRed(add_ptr_u(U, offsetU + 20*K), u[1][0], 0, bk && c + 20 < C);
+    atomicRed(add_ptr_u(U, offsetU + 24*K), u[2][0], 0, bk && c + 24 < C);
+    atomicRed(add_ptr_u(U, offsetU + 28*K), u[3][0], 0, bk && c + 28 < C);
+    //atomicRed(add_ptr_u(U, offsetU + 16*K), u[0][0], 0, true);
+    //atomicRed(add_ptr_u(U, offsetU + 20*K), u[1][0], 0, true);
+    //atomicRed(add_ptr_u(U, offsetU + 24*K), u[2][0], 0, true);
+    //atomicRed(add_ptr_u(U, offsetU + 28*K), u[3][0], 0, true);
 }
 
 bool Gemm_TN(CUstream stream, uint SMs,
@@ -199,6 +200,10 @@ bool Gemm_TN(CUstream stream, uint SMs,
     uint gridN = CEIL_DIV(N, 32);
     C >>= 2;
     K >>= 2;
+
+    std::cout << "gridK = " << gridK << "\n";
+    std::cout << "gridC = " << gridC << "\n";
+    std::cout << "gridN = " << gridN << "\n";
 
     // target mult of 6 blocks per SM
     uint smMult = 1, tiles = gridK*gridC;

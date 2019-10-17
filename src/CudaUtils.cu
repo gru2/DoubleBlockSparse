@@ -107,7 +107,7 @@ void CudaUtils::gemmTN(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs, CuBla
 	cublasHandle_t *cuh = static_cast<cublasHandle_t *>(handle.getHandle());
 	cublasErrCheck(cublasSgemm(*cuh,
 		CUBLAS_OP_N, CUBLAS_OP_T,
-		rhs.cols, lhs.rows, lhs.cols,
+		rhs.cols, lhs.cols, lhs.rows,
 		&alpha,
 		rhs.data, rhs.cols,
 		lhs.data, lhs.cols,
@@ -159,8 +159,8 @@ void CudaUtils::gemmTiled(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs)
 void CudaUtils::gemmOAI_TN(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs)
 {
 	const int tile_size = 16;
-	int M = lhs.rows;
+	int M = lhs.cols;
 	int N = rhs.cols;
-	int K = lhs.cols;
-	Gemm_TN(0, 68, r.data, lhs.data, rhs.data, M, N, K);
+	int K = lhs.rows;
+	Gemm_TN(0, 20, r.data, lhs.data, rhs.data, N, M, K);
 }

@@ -138,10 +138,10 @@ USUTF_TEST(benchmark_gemmTiled)
 
 USUTF_TEST(benchmark_gemmTN)
 {
-	Eigen::MatrixXf ae(1024, 1024), be(1024, 16);
+	Eigen::MatrixXf ae(32, 32), be(32, 32);
 	ae.setRandom();
 	be.setRandom();
-	Eigen::MatrixXf c_ref = ae.transpose() * be;
+	Eigen::MatrixXf c_ref = ae * be;
 	CudaUtils::MatrixF a = CudaUtils::toDevice(EigenUtils::toMatrix(ae));
 	CudaUtils::MatrixF at = CudaUtils::toDevice(EigenUtils::toMatrix(ae.transpose()));
 	CudaUtils::MatrixF b = CudaUtils::toDevice(EigenUtils::toMatrix(be));
@@ -149,28 +149,19 @@ USUTF_TEST(benchmark_gemmTN)
 
 	Eigen::MatrixXf c_test;
 
-	CudaUtils::deviceSynchronize();
-	auto t5 = std::chrono::high_resolution_clock::now();
-	CudaUtils::gemm(c_device, a, b, handle);
-	CudaUtils::deviceSynchronize();
-	auto t6 = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> time_span65 = std::chrono::duration_cast<std::chrono::duration<double>>(t6 - t5);
-	CudaUtils::MatrixF c_host3 = CudaUtils::toHost(c_device);
-	c_test = EigenUtils::toEigen(c_host3);
-	Usutf::test(EigenUtils::almostEqual(c_test, c_ref, 1.0e-3f, 2));
-	std::cout << "(gemm) t6-t5 = " << time_span65.count() << " seconds.\n";
-
+	std::cout << "\n=== gemmOAI_TN ===\n";
 	CudaUtils::deviceSynchronize();
 	auto t1 = std::chrono::high_resolution_clock::now();
 	CudaUtils::gemmOAI_TN(c_device, at, b);
 	CudaUtils::deviceSynchronize();
 	auto t2 = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+	std::chrono::duration<double> time_span21 = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
 	CudaUtils::MatrixF c_host = CudaUtils::toHost(c_device);
 	c_test = EigenUtils::toEigen(c_host);
 	Usutf::test(EigenUtils::almostEqual(c_test, c_ref, 1.0e-3f, 2));
-	std::cout << "(gemmOAI_TN) t2-t1 = " << time_span.count() << " seconds.\n";
+	std::cout << "(gemmOAI_TN) t2-t1 = " << time_span21.count() << " seconds.\n";
 
+	std::cout << "\n=== gemmTN ===\n";
 	CudaUtils::deviceSynchronize();
 	auto t3 = std::chrono::high_resolution_clock::now();
 	CudaUtils::gemmTN(c_device, at, b, handle);
@@ -181,6 +172,18 @@ USUTF_TEST(benchmark_gemmTN)
 	c_test = EigenUtils::toEigen(c_host2);
 	Usutf::test(EigenUtils::almostEqual(c_test, c_ref, 1.0e-3f, 2));
 	std::cout << "(gemmTN) t4-t3 = " << time_span43.count() << " seconds.\n";
+
+	std::cout << "\n=== gemm ===\n";
+	CudaUtils::deviceSynchronize();
+	auto t5 = std::chrono::high_resolution_clock::now();
+	CudaUtils::gemm(c_device, a, b, handle);
+	CudaUtils::deviceSynchronize();
+	auto t6 = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> time_span65 = std::chrono::duration_cast<std::chrono::duration<double>>(t6 - t5);
+	CudaUtils::MatrixF c_host3 = CudaUtils::toHost(c_device);
+	c_test = EigenUtils::toEigen(c_host3);
+	Usutf::test(EigenUtils::almostEqual(c_test, c_ref, 1.0e-3f, 2));
+	std::cout << "(gemm) t6-t5 = " << time_span65.count() << " seconds.\n";
 }
 
 int main(int argc, char *argv[])
