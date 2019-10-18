@@ -162,5 +162,5 @@ void CudaUtils::gemmOAI_TN(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs)
 	int M = lhs.cols;
 	int N = rhs.cols;
 	int K = lhs.rows;
-	Gemm_TN(0, 20, r.data, lhs.data, rhs.data, N, M, K);
+	Gemm_TN(0, 20, r.data, lhs.data, rhs.data, M, N, K);
 }

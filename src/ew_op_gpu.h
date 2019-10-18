@@ -27,14 +27,14 @@ __device__ __forceinline__  void st_shared_v4(int a, float* v)
 __device__ __forceinline__ void atomicRed(float *ptr, float val, int i=0, bool b=true)
 {
     if (b)
-        //asm volatile ("red.global.add.f32 [%0], %1;" :: "l"(ptr+i), "f"(val)  );
-        asm volatile ("st.global.f32 [%0], %1;" :: "l"(ptr+i), "f"(val)  );
+        asm volatile ("red.global.add.f32 [%0], %1;" :: "l"(ptr+i), "f"(val)  );
+        //asm volatile ("st.global.f32 [%0], %1;" :: "l"(ptr+i), "f"(val)  );
 }
 __device__ __forceinline__ void atomicRed(float4 *ptr, float4 val, int i=0, bool b=true)
 {
     if (b)
-        //asm volatile ("red.global.add.f32 [%0], %1;" :: "l"(ptr+i), "f"(val.x)  );
-        asm volatile ("st.global.f32 [%0], %1;" :: "l"(ptr+i), "f"(val.x)  );
+        asm volatile ("red.global.add.f32 [%0], %1;" :: "l"(ptr+i), "f"(val.x)  );
+        //asm volatile ("st.global.f32 [%0], %1;" :: "l"(ptr+i), "f"(val.x)  );
 }
 
 #define ADD_PTR_U(T) \

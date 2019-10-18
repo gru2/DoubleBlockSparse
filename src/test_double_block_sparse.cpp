@@ -138,7 +138,7 @@ USUTF_TEST(benchmark_gemmTiled)
 
 USUTF_TEST(benchmark_gemmTN)
 {
-	Eigen::MatrixXf ae(32, 32), be(32, 32);
+	Eigen::MatrixXf ae(3 * 1024, 1024), be(1024, 32);
 	ae.setRandom();
 	be.setRandom();
 	Eigen::MatrixXf c_ref = ae * be;

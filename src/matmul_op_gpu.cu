@@ -201,10 +201,6 @@ bool Gemm_TN(CUstream stream, uint SMs,
     C >>= 2;
     K >>= 2;
 
-    std::cout << "gridK = " << gridK << "\n";
-    std::cout << "gridC = " << gridC << "\n";
-    std::cout << "gridN = " << gridN << "\n";
-
     // target mult of 6 blocks per SM
     uint smMult = 1, tiles = gridK*gridC;
          if (tiles == 1) smMult = 6;
