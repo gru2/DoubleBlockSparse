@@ -115,6 +115,21 @@ void CudaUtils::gemmTN(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs, CuBla
 		r.data, r.cols));
 }
 
+void CudaUtils::gemmNT(MatrixF &r, const MatrixF &lhs, const MatrixF &rhs, CuBlasHandle &handle)
+{
+	float alpha = 1.0f;
+	float beta = 0.0f;
+	cublasHandle_t *cuh = static_cast<cublasHandle_t *>(handle.getHandle());
+	cublasErrCheck(cublasSgemm(*cuh,
+		CUBLAS_OP_T, CUBLAS_OP_N,
+		rhs.rows, lhs.rows, lhs.cols,
+		&alpha,
+		rhs.data, rhs.cols,
+		lhs.data, lhs.cols,
+		&beta,
+		r.data, r.cols));
+}
+
 template <int TILE_SIZE>
 __global__ void gemmTiledKernel(const float * __restrict__ A, const float * __restrict__ B, float * __restrict__ C, int M, int N, int K)
 {
